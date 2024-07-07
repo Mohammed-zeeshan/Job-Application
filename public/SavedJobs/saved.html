@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <title>Saved Jobs</title>
+</head>
+<body>
+    <div class="container">
+        <div class="text-end"><button class="btn btn-danger" onclick="window.location.href = '../Home/home.html'">Back</button></div>
+        <h3>Saved Jobs</h3>
+        <ul id="list" class="list-group mt-3 w-50"></ul>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            try {
+                await axios.get('http://localhost:3000/job/applylist', {
+                    headers: { Authorization: token },
+                })
+                .then((response) => {
+                    for (let i=0;i<response.data[0].jobs.length;i++) {
+                        showItems(response.data[0].jobs[i]);
+                    }
+                })
+                .catch(err => {console.log(err)});
+            } catch (err) {
+                console.log(err);
+            }
+        })
+        function showItems(items) {
+            const parentElem = document.getElementById("list");
+            const childElem = `<li class="list-group-item mt-3" id=${items.id}>
+                                <h3>${items.cname}</h3>
+                                <h6>Job title: ${items.title}</h6>
+                                <label>Salary: ${items.salary}</label>
+                                <p>Location: ${items.location}</p>
+                                <label>Status: Applied</label>
+                            </li>`;
+            parentElem.innerHTML = parentElem.innerHTML + childElem; 
+        }
+    </script>
+</body>
+</html>

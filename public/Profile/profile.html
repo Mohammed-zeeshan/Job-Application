@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <title>Profile</title>
+  </head>
+  <body>
+    <div class="container">
+        <div class="text-end"><button class="btn btn-danger" onclick="window.location.href = '../Home/home.html'">Back</button></div>
+        <h1>Your Profile</h1>
+        <div id="formItems"></div>
+        <form id="profileform">
+            <div>
+                <label for="fname" class="form-label">Full Name:</label>
+                <input type="text" class="form-control w-25" id="fname" name="fname" />
+            </div>
+            <div>
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control w-25" id="email" name="email" />
+            </div>
+            <div>
+                <label for="skills" class="form-label">Skills:</label>
+                <input
+                type="text"
+                class="form-control w-25"
+                id="skills"
+                name="skills"
+                />
+            </div>
+            <div>
+                <label for="degree" class="form-label">Degree:</label>
+                <input
+                type="text"
+                class="form-control w-25"
+                id="degree"
+                name="degree"
+                />
+            </div>
+            <div>
+                <label for="branch" class="form-label">Branch:</label>
+                <input
+                type="text"
+                class="form-control w-25"
+                id="branch"
+                name="branch"
+                />
+            </div>
+            <div>
+                <label for="percentage" class="form-label">Percentage:</label>
+                <input
+                type="number"
+                class="form-control w-25"
+                id="percentage"
+                name="percentage"
+                />
+            </div>
+            <div>
+                <button class="btn btn-primary mt-3" onclick="submitForm(event)">
+                Add
+                </button>
+            </div>
+            </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+    <script>
+      function submitForm(event) {
+        event.preventDefault();
+        const fname = document.getElementById("fname").value;
+        const email = document.getElementById("email").value;
+        const skills = document.getElementById("skills").value;
+        const degree = document.getElementById("degree").value;
+        const branch = document.getElementById("branch").value;
+        const percentage = document.getElementById("percentage").value;
+        const token = localStorage.getItem('token');
+        const myObj = {
+          fname: fname,
+          email: email,
+          skills: skills,
+          degree: degree,
+          branch: branch,
+          percentage: percentage,
+        };
+        axios
+          .post("http://localhost:3000/profile/createprofile", myObj, {
+            headers: { Authorization: token },
+          })
+          .then((response) => {
+            console.log(response.data);
+            window.location.href = '../Home/home.html'
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      function hideform() {
+        document.getElementById("profileform").style.visibility = "hidden";
+      }
+      window.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('token');
+        try {
+            await axios.get('http://localhost:3000/profile/getprofile', {
+              headers: { Authorization: token },
+            })
+            .then((response) => {
+                if (response.data) {
+                    addItem(response.data);
+                    hideform();
+                } else {
+                    console.log('Create profile');
+                }
+            }).catch((err) => {
+                console.log(err);
+            }) ;
+        } catch (err) {
+            console.log(err);
+        }
+      })
+      function addItem(items) {
+        const parentElem = document.getElementById('formItems');
+        const childElem = ` <div class='mb-3'><label>Name: ${items.fname}</label></div>
+                            <div class='mb-3'><label>Email: ${items.email}</label></div>
+                            <div class='mb-3'><label>Skill: ${items.skills}</label></div>
+                            <div class='mb-3'><label>Degree: ${items.degree}</label></div>
+                            <div class='mb-3'><label>Branch: ${items.branch}</label></div>
+                            <div class='mb-3'><label>Percentage: ${items.percentage}</label></div>`;
+        parentElem.innerHTML = parentElem.innerHTML + childElem;
+      }
+      function editItem(item) {
+        console.log(item);
+      }
+    </script>
+  </body>
+</html>
